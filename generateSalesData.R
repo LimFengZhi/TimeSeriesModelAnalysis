@@ -1,5 +1,5 @@
 # Generate random TS data using last digit of each member ID 
-ID<- 50143
+ID<- 30145
 set.seed(ID) 
 
 digits <- substr(ID, 1, 2) 
