@@ -13,4 +13,4 @@ h <- length(data_frame) - length(train)
 test <- tail(data_frame, h)
 
 train <- ts(train, frequency = 12, start = start(data_frame))
-test  <- ts(test, frequency = 12, start = c(2019, 12))
+test  <- ts(test, frequency = 12, start = c(2018, 7))
