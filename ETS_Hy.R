@@ -1,44 +1,23 @@
-# 1. MODEL IDENTIFICATION
 library(forecast)
 
-ets_model <- ets(train)
-ets_model
-summary(ets_model) # Show model parameters
+# 1. MODEL FITTING
+ets_model <- ets(train, model="AAA") 
+summary(ets_model)
 
-# 2. MODEL FITTING
-plot(ets_model)
-
-## Fitted values vs Actual
-fitted_values <- fitted(ets_model)
-
-plot(train, main="Actual vs Fitted (ETS Model)", ylab="Sales")
-lines(fitted_values, col="blue")
-legend("topleft", legend=c("Actual","Fitted"),
-       col=c("black","blue"), lty=1)
-
-accuracy(ets_model)
-
-# 3. DIAGNOSTIC CHECKING
-## plot + ACF + histogram
+# 2. DIAGNOSTIC CHECKING
 checkresiduals(ets_model)
 
-## Ljung-Box test
-Box.test(residuals(ets_model), lag=20, type="Ljung-Box")
+# 3. FORECASTING
+ets_forecast <- forecast(ets_model, h = h)
+plot(ets_forecast, main="ETS Forecast vs Actual Test Data", ylab="Sales", xlab="Year")
+lines(test, col="red", lwd=2) # Overlay the actual test data in red
+legend("topleft", legend=c("Forecast", "Actual Test Data"), col=c("blue", "red"), lty=1, lwd=2)
 
-mean(residuals(ets_model))
 
-# 4. FORECASTING & EVALUATION
-## Forecast for test period
-forecast_ets <- forecast(ets_model, h = h)
+# 4. FORECAST EVALUATION (Accuracy & MAPE)
+# Evaluate the forecast against the test dataset
+accuracy_results <- accuracy(ets_forecast, test)
+print(accuracy_results)
 
-## Plot forecast vs actual
-plot(forecast_ets, main="ETS Forecast vs Actual")
-lines(test, col="red")
-
-legend("topleft", legend=c("Forecast","Actual"),
-       col=c("blue","red"), lty=1)
-
-accuracy(forecast_ets, test)
-
-autoplot(forecast_ets) +
-  autolayer(test, series="Actual")
+test_mape <- accuracy_results["Test set", "MAPE"]
+cat("\nTest Set MAPE:", round(test_mape, 2), "%\n")
