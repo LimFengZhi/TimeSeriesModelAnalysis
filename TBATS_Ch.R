@@ -1,59 +1,53 @@
-# 1. MODEL IDENTIFICATION
 library(forecast)
 
-tbats_model <- tbats(train)
-tbats_model
-summary(tbats_model)
+# Model fitting
+tbats_model <- tbats(
+  train,
+  use.box.cox = FALSE,
+  use.trend = TRUE,
+  use.damped.trend = FALSE,
+  seasonal.periods = c(12),
+  use.arma.errors = TRUE
+)
 
-# 2. MODEL FITTING
-plot(tbats_model)
+print("=== Model Summary ===")
+print(tbats_model)
 
-## Fitted values vs Actual
-fitted_values <- fitted(tbats_model)
+# Diagnostic checking
+res_tbats <- residuals(tbats_model)
 
-plot(train, main="Actual vs Fitted (TBATS Model)", ylab="Sales")
-lines(fitted_values, col="blue")
-legend("topleft", legend=c("Actual","Fitted"),
-       col=c("black","blue"), lty=1)
+# Ljung-Box test
+lb_test <- Box.test(res_tbats, lag = 8, fitdf = 0, type = "Ljung-Box")
+print("=== Ljung-Box Test ===")
+print(lb_test)
 
-accuracy(tbats_model)
-
-# 3. DIAGNOSTIC CHECKING
-## plot + ACF + histogram
+# Residual plot
 checkresiduals(tbats_model)
 
-## Ljung-Box test
-lb_test <- Box.test(residuals(tbats_model), lag=12, type="Ljung-Box")
-lb_test
+# Forecast and evaluation
+tbats_fc <- forecast(tbats_model, h = h)
 
-mean_res <- mean(residuals(tbats_model))
-mean_res
+# Plot forecast vs actual test data
+plot(tbats_fc, main = "TBATS Forecast vs Actual Sales", ylab = "Sales", xlab = "Year")
+lines(test, col = "red", lwd = 2)
+legend("topleft",
+       legend = c("Forecast", "Actual Test Data"),
+       col = c("blue", "red"),
+       lty = 1,
+       lwd = 2)
 
-# 4. FORECASTING & EVALUATION
-## Forecast for test period
-forecast_tbats <- forecast(tbats_model, h = h)
+# Accuracy metrics
+accuracy_tbats <- accuracy(tbats_fc, test)
 
-## Plot forecast vs actual
-plot(forecast_tbats, main="TBATS Forecast vs Actual")
-lines(test, col="red")
+print("=== Forecast Evaluation Metrics ===")
+print(accuracy_tbats)
 
-legend("topleft", legend=c("Forecast","Actual"),
-       col=c("blue","red"), lty=1)
+# MAPE difference
+train_mape <- accuracy_tbats["Training set", "MAPE"]
+test_mape <- accuracy_tbats["Test set", "MAPE"]
+mape_diff <- abs(train_mape - test_mape)
 
-acc_test <- accuracy(forecast_tbats, test)
-acc_test
-
-autoplot(forecast_tbats) +
-  autolayer(test, series="Actual")
-
-# 5. CHECK TRAIN VS TEST MAPE DIFFERENCE
-acc_train <- accuracy(tbats_model)
-
-train_mape <- acc_train["Training set","MAPE"]
-test_mape  <- acc_test["Test set","MAPE"]
-diff_mape  <- abs(train_mape - test_mape)
-
-cat("Train MAPE:", train_mape, "\n")
-cat("Test MAPE :", test_mape, "\n")
-cat("MAPE Difference:", diff_mape, "\n")
-cat("Ljung-Box p-value:", lb_test$p.value, "\n")
+print("=== MAPE Check ===")
+print(paste("Train MAPE:", round(train_mape, 2)))
+print(paste("Test MAPE:", round(test_mape, 2)))
+print(paste("Absolute MAPE Difference:", round(mape_diff, 2)))
