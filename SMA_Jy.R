@@ -62,21 +62,21 @@ f_6  <- get_sma_forecast(train, test, h, n=6)
 f_12 <- get_sma_forecast(train, test, h, n=12)
 
 plot(train, main="SMA(3) Forecast vs Actual",
-     xlim=c(2015, 2020), ylim=c(0, 400), ylab="Sales")
+     xlim=c(2015, 2021), ylim=c(0, 450), ylab="Sales")
 lines(test, col="red",  lwd=2)
 lines(f_3,  col="blue", lwd=2, lty=2)
 legend("bottomright", legend=c("Forecast","Actual"),
        col=c("blue","red"), lty=c(2,1), lwd=2, cex=0.7)
 
 plot(train, main="SMA(6) Forecast vs Actual",
-     xlim=c(2015, 2020), ylim=c(0, 400), ylab="Sales")
+     xlim=c(2015, 2021), ylim=c(0, 450), ylab="Sales")
 lines(test, col="red",  lwd=2)
 lines(f_6,  col="blue", lwd=2, lty=2)
 legend("bottomright", legend=c("Forecast","Actual"),
        col=c("blue","red"), lty=c(2,1), lwd=2, cex=0.7)
 
 plot(train, main="SMA(12) Forecast vs Actual",
-     xlim=c(2015, 2020), ylim=c(0, 400), ylab="Sales")
+     xlim=c(2015, 2021), ylim=c(0, 450), ylab="Sales")
 lines(test, col="red",  lwd=2)
 lines(f_12, col="blue", lwd=2, lty=2)
 legend("bottomright", legend=c("Forecast","Actual"),
@@ -89,10 +89,20 @@ mape_train <- train_acc[,"MAPE"]
 mape_test  <- test_acc[,"MAPE"]
 mape_diff  <- abs(mape_train - mape_test)
 
+# compare all 3 models
+cat("-- SMA(3) --\n")
+print(ljung_3)
+cat("Test MAPE:", accuracy(f_3, test)[,"MAPE"], "\n")
+
+cat("-- SMA(6) --\n")
+print(ljung_6)
+cat("Test MAPE:", accuracy(f_6, test)[,"MAPE"], "\n")
+
+cat("-- SMA(12) --\n")
 print(ljung_12)
-cat("Mean Residuals SMA(12):", mean(error_12), "\n")
+cat("Mean Residuals:", mean(error_12), "\n")
 print(test_acc)
-cat("Train MAPE     :", mape_train, "\n")
-cat("Test MAPE      :", mape_test,  "\n")
-cat("MAPE Difference:", mape_diff,  "\n")
-cat("Ljung-Box p-value:", ljung_12$p.value, "\n")
+cat("Train MAPE:", mape_train, "\n")
+cat("Test MAPE:", mape_test, "\n")
+cat("MAPE Diff:", mape_diff, "\n")
+cat("Ljung-Box p:", ljung_12$p.value, "\n")
