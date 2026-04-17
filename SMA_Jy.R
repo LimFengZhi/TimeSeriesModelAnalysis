@@ -24,8 +24,12 @@ legend("topleft",
        col=c("black","blue","green","red"),
        lty=1, lwd=2, cex=0.7)
 
+fitted_3  <- ts(na.omit(sma_3),  frequency=12, start=c(2015,3))
+fitted_6  <- ts(na.omit(sma_6),  frequency=12, start=c(2015,6))
 fitted_12 <- ts(na.omit(sma_12), frequency=12, start=c(2015,12))
-train_12  <- window(train, start=c(2015,12))
+train_3  <- window(train, start=c(2015,3))
+train_6  <- window(train, start=c(2015,6))
+train_12 <- window(train, start=c(2015,12))
 
 error_3  <- na.omit(as.numeric(train) - as.numeric(sma_3))
 error_6  <- na.omit(as.numeric(train) - as.numeric(sma_6))
@@ -84,19 +88,23 @@ legend("bottomright", legend=c("Forecast","Actual"),
 
 test_acc  <- accuracy(f_12, test)
 train_acc <- accuracy(fitted_12, train_12)
-
 mape_train <- train_acc[,"MAPE"]
 mape_test  <- test_acc[,"MAPE"]
 mape_diff  <- abs(mape_train - mape_test)
 
-# compare all 3 models
 cat("-- SMA(3) --\n")
 print(ljung_3)
+cat("Train MAPE:", accuracy(fitted_3, train_3)[,"MAPE"], "\n")
 cat("Test MAPE:", accuracy(f_3, test)[,"MAPE"], "\n")
+cat("MAPE Diff:", abs(accuracy(fitted_3, train_3)[,"MAPE"] -
+                        accuracy(f_3, test)[,"MAPE"]), "\n")
 
 cat("-- SMA(6) --\n")
 print(ljung_6)
+cat("Train MAPE:", accuracy(fitted_6, train_6)[,"MAPE"], "\n")
 cat("Test MAPE:", accuracy(f_6, test)[,"MAPE"], "\n")
+cat("MAPE Diff:", abs(accuracy(fitted_6, train_6)[,"MAPE"] -
+                        accuracy(f_6, test)[,"MAPE"]), "\n")
 
 cat("-- SMA(12) --\n")
 print(ljung_12)
