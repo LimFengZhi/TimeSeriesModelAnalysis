@@ -83,7 +83,7 @@ plot(train, main="SMA(12) Forecast vs Actual",
      xlim=c(2015, 2021), ylim=c(0, 450), ylab="Sales")
 lines(test, col="red",  lwd=2)
 lines(f_12, col="blue", lwd=2, lty=2)
-legend("bottomright", legend=c("Forecast","Actual"),
+legend("topleft", legend=c("Forecast","Actual"),
        col=c("blue","red"), lty=c(2,1), lwd=2, cex=0.7)
 
 test_acc  <- accuracy(f_12, test)
