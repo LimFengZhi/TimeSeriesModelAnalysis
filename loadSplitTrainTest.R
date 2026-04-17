@@ -6,11 +6,7 @@ View(sales_ds)
 data_frame <- ts(sales_ds[,2], frequency = 12, start = c(2015,1))
 plot(data_frame, ylab="Sales", xlab="Year", main="Monthly Sales Data (2015 - Onwards)")
 
-# Split Train Test 70%
-# Train/Test Split
-train <- head(data_frame, round(length(data_frame) * 0.70))
-h <- length(data_frame) - length(train)
-test <- tail(data_frame, h)
-
-train <- ts(train, frequency = 12, start = start(data_frame))
-test  <- ts(test, frequency = 12, start = c(2018, 7))
+# 4 years train, 2 years test (YEAR-BASED split)
+train <- window(data_frame, end = c(2018, 12))
+test  <- window(data_frame, start = c(2019, 1))
+h <- length(test)
