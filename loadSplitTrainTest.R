@@ -7,6 +7,6 @@ data_frame <- ts(sales_ds[,2], frequency = 12, start = c(2015,1))
 plot(data_frame, ylab="Sales", xlab="Year", main="Monthly Sales Data (2015 - Onwards)")
 
 # 80% Splitting
-train <- window(data_frame, end = c(2018, 12))
-test  <- window(data_frame, start = c(2019, 1))
+train <- window(data_frame, end = c(2019, 12))
+test  <- window(data_frame, start = c(2020, 1))
 h <- length(test)
