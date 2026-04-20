@@ -1,116 +1,50 @@
+library(smooth)
 library(forecast)
-library(TTR)
 
-plot(train, main="Monthly Sales - Training Data",
-     ylab="Sales", xlab="Year")
-
-components <- decompose(train, type="additive")
-plot(components)
-
-acf(train,  lag.max=36, main="ACF of Training Data")
-pacf(train, lag.max=36, main="PACF of Training Data")
-
-sma_3  <- SMA(train, n=3)
-sma_6  <- SMA(train, n=6)
-sma_12 <- SMA(train, n=12)
-
-plot(train, main="SMA Comparison on Training Data",
-     ylab="Sales", xlab="Year", col="black", lwd=1.5)
-lines(ts(sma_3,  frequency=12, start=start(train)), col="blue",  lwd=2)
-lines(ts(sma_6,  frequency=12, start=start(train)), col="green", lwd=2)
-lines(ts(sma_12, frequency=12, start=start(train)), col="red",   lwd=2)
-legend("topleft",
-       legend=c("Actual", "SMA(3)", "SMA(6)", "SMA(12)"),
-       col=c("black","blue","green","red"),
-       lty=1, lwd=2, cex=0.7)
-
-fitted_3  <- ts(na.omit(sma_3),  frequency=12, start=c(2015,3))
-fitted_6  <- ts(na.omit(sma_6),  frequency=12, start=c(2015,6))
-fitted_12 <- ts(na.omit(sma_12), frequency=12, start=c(2015,12))
-train_3  <- window(train, start=c(2015,3))
-train_6  <- window(train, start=c(2015,6))
-train_12 <- window(train, start=c(2015,12))
-
-error_3  <- na.omit(as.numeric(train) - as.numeric(sma_3))
-error_6  <- na.omit(as.numeric(train) - as.numeric(sma_6))
-error_12 <- na.omit(as.numeric(train) - as.numeric(sma_12))
-
-plot(error_3,  type="l", main="Residuals - SMA(3)",  ylab="Residuals")
-abline(h=0, col="red", lty=2)
-
-plot(error_6,  type="l", main="Residuals - SMA(6)",  ylab="Residuals")
-abline(h=0, col="red", lty=2)
-
-plot(error_12, type="l", main="Residuals - SMA(12)", ylab="Residuals")
-abline(h=0, col="red", lty=2)
-
-acf(error_3,  main="ACF of Residuals - SMA(3)")
-acf(error_6,  main="ACF of Residuals - SMA(6)")
-acf(error_12, main="ACF of Residuals - SMA(12)")
-
-ljung_3  <- Box.test(error_3,  lag=12, type="Ljung-Box")
-ljung_6  <- Box.test(error_6,  lag=12, type="Ljung-Box")
-ljung_12 <- Box.test(error_12, lag=12, type="Ljung-Box")
-
-get_sma_forecast <- function(train, test, h, n) {
-  smoothed  <- SMA(train, n=n)
-  last_sma  <- tail(na.omit(smoothed), 1)
-  predicted <- ts(rep(last_sma, h),
-                  frequency=12,
-                  start=start(test))
-  return(predicted)
+# One-time helper function (paste this once at the top)
+sma_accuracy <- function(fit, train, test, h) {
+  fr <- forecast(fit, h = h)
+  tr_act <- as.numeric(train); tr_fit <- as.numeric(fitted(fit))
+  te_act <- as.numeric(test);  te_fit <- as.numeric(fr$mean)
+  keep <- !is.na(tr_fit)
+  tr_act <- tr_act[keep]; tr_fit <- tr_fit[keep]
+  tr_err <- tr_act - tr_fit; te_err <- te_act - te_fit
+  round(rbind(
+    "Training set" = c(ME = mean(tr_err), RMSE = sqrt(mean(tr_err^2)),
+                       MAE = mean(abs(tr_err)), MPE = mean(tr_err/tr_act)*100,
+                       MAPE = mean(abs(tr_err/tr_act))*100),
+    "Test set"     = c(ME = mean(te_err), RMSE = sqrt(mean(te_err^2)),
+                       MAE = mean(abs(te_err)), MPE = mean(te_err/te_act)*100,
+                       MAPE = mean(abs(te_err/te_act))*100)
+  ), 4)
 }
 
-f_3  <- get_sma_forecast(train, test, h, n=3)
-f_6  <- get_sma_forecast(train, test, h, n=6)
-f_12 <- get_sma_forecast(train, test, h, n=12)
 
-plot(train, main="SMA(3) Forecast vs Actual",
-     xlim=c(2015, 2021), ylim=c(0, 450), ylab="Sales")
-lines(test, col="red",  lwd=2)
-lines(f_3,  col="blue", lwd=2, lty=2)
-legend("bottomright", legend=c("Forecast","Actual"),
-       col=c("blue","red"), lty=c(2,1), lwd=2, cex=0.7)
+# Model 1: SMA(3)
+fit1 <- sma(train, order = 3, h = h)
+summary(fit1)
+checkresiduals(fit1)
+fr1 <- forecast(fit1, h = h)
+sma_accuracy(fit1, train, test, h)       # <-- only this line changed from your SARIMA version
+plot(fr1, main = "SMA(3)")
+lines(test, col = "turquoise2", lwd = 2)
 
-plot(train, main="SMA(6) Forecast vs Actual",
-     xlim=c(2015, 2021), ylim=c(0, 450), ylab="Sales")
-lines(test, col="red",  lwd=2)
-lines(f_6,  col="blue", lwd=2, lty=2)
-legend("bottomright", legend=c("Forecast","Actual"),
-       col=c("blue","red"), lty=c(2,1), lwd=2, cex=0.7)
 
-plot(train, main="SMA(12) Forecast vs Actual",
-     xlim=c(2015, 2021), ylim=c(0, 450), ylab="Sales")
-lines(test, col="red",  lwd=2)
-lines(f_12, col="blue", lwd=2, lty=2)
-legend("topleft", legend=c("Forecast","Actual"),
-       col=c("blue","red"), lty=c(2,1), lwd=2, cex=0.7)
+# Model 2: SMA(6)
+fit2 <- sma(train, order = 6, h = h)
+summary(fit2)
+checkresiduals(fit2)
+fr2 <- forecast(fit2, h = h)
+sma_accuracy(fit2, train, test, h)       # <-- only this line changed
+plot(fr2, main = "SMA(6)")
+lines(test, col = "turquoise2", lwd = 2)
 
-test_acc  <- accuracy(f_12, test)
-train_acc <- accuracy(fitted_12, train_12)
-mape_train <- train_acc[,"MAPE"]
-mape_test  <- test_acc[,"MAPE"]
-mape_diff  <- abs(mape_train - mape_test)
 
-cat("-- SMA(3) --\n")
-print(ljung_3)
-cat("Train MAPE:", accuracy(fitted_3, train_3)[,"MAPE"], "\n")
-cat("Test MAPE:", accuracy(f_3, test)[,"MAPE"], "\n")
-cat("MAPE Diff:", abs(accuracy(fitted_3, train_3)[,"MAPE"] -
-                        accuracy(f_3, test)[,"MAPE"]), "\n")
-
-cat("-- SMA(6) --\n")
-print(ljung_6)
-cat("Train MAPE:", accuracy(fitted_6, train_6)[,"MAPE"], "\n")
-cat("Test MAPE:", accuracy(f_6, test)[,"MAPE"], "\n")
-cat("MAPE Diff:", abs(accuracy(fitted_6, train_6)[,"MAPE"] -
-                        accuracy(f_6, test)[,"MAPE"]), "\n")
-
-cat("-- SMA(12) --\n")
-print(ljung_12)
-cat("Mean Residuals:", mean(error_12), "\n")
-print(test_acc)
-cat("Train MAPE:", mape_train, "\n")
-cat("Test MAPE:", mape_test, "\n")
-cat("MAPE Diff:", mape_diff, "\n")
-cat("Ljung-Box p:", ljung_12$p.value, "\n")
+# Model 3: SMA(12)
+fit3 <- sma(train, order = 12, h = h)
+summary(fit3)
+checkresiduals(fit3)
+fr3 <- forecast(fit3, h = h)
+sma_accuracy(fit3, train, test, h)       # <-- only this line changed
+plot(fr3, main = "SMA(12)")
+lines(test, col = "turquoise2", lwd = 2)

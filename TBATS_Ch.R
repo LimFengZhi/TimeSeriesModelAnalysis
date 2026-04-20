@@ -1,105 +1,53 @@
 library(forecast)
 
-# =========================
-# 1. Model Fitting 
-# =========================
+# -------------------------------------------------------------
+# TBATS Variant 1 (BEST):  BoxCox + Trend + Damped + ARMA errors
+# Train_RMSE=49.06  Test_RMSE=51.12  RMSE_Gap=2.06
+# Train_MAPE=44.04  Test_MAPE=24.61  MAPE_Gap=19.43
+# -------------------------------------------------------------
+fit_tbats1 <- tbats(train,
+                    use.box.cox      = TRUE,
+                    use.trend        = TRUE,
+                    use.damped.trend = TRUE,
+                    use.arma.errors  = TRUE)
+summary(fit_tbats1)
+checkresiduals(fit_tbats1)
+fr_tbats1 <- forecast(fit_tbats1, h = h)
+accuracy(fr_tbats1, test)
+plot(fr_tbats1, main = "TBATS  (BoxCox + Trend + Damped + ARMA)")
+lines(test, col = "turquoise2", lwd = 2)
 
-# 1. Forced Trend
-tbats_trend <- tbats(train, 
-                     use.box.cox = FALSE, 
-                     use.trend = TRUE, 
-                     use.damped.trend = FALSE, 
-                     seasonal.periods = c(12), 
-                     use.arma.errors = TRUE)
 
-# 2. Damped Trend
-tbats_damped <- tbats(train, 
-                      use.box.cox = FALSE, 
-                      use.trend = TRUE, 
-                      use.damped.trend = TRUE, 
-                      seasonal.periods = c(12), 
-                      use.arma.errors = TRUE)
+# -------------------------------------------------------------
+# TBATS Variant 2:  No BoxCox + Trend + Auto damping + ARMA errors
+# Same test metrics as Variant 1 (grid output identical)
+# -------------------------------------------------------------
+fit_tbats2 <- tbats(train,
+                    use.box.cox      = FALSE,
+                    use.trend        = TRUE,
+                    use.damped.trend = NULL,    # auto
+                    use.arma.errors  = TRUE)
+summary(fit_tbats2)
+checkresiduals(fit_tbats2)
+fr_tbats2 <- forecast(fit_tbats2, h = h)
+accuracy(fr_tbats2, test)
+plot(fr_tbats2, main = "TBATS  (No BoxCox + Trend + Auto damp + ARMA)")
+lines(test, col = "turquoise2", lwd = 2)
 
-# =========================
-# 2. Forecast
-# =========================
-h <- length(test)
 
-fc_trend  <- forecast(tbats_trend, h = h)
-fc_damped <- forecast(tbats_damped, h = h)
-
-# =========================
-# 3. Accuracy Calculations
-# =========================
-acc_trend  <- accuracy(fc_trend, test)
-acc_damped <- accuracy(fc_damped, test)
-
-print(acc_trend)
-print(acc_damped)
-
-# =========================
-# 4. Ljung-Box Test
-# =========================
-lb_trend  <- Box.test(residuals(tbats_trend), lag = 20, type = "Ljung-Box")
-lb_damped <- Box.test(residuals(tbats_damped), lag = 20, type = "Ljung-Box")
-
-# =========================
-# 5. Model Comparison Table
-# =========================
-comparison <- data.frame(
-  Model = c("TREND", "DAMPED"),
-  
-  RMSE = c(acc_trend["Test set", "RMSE"],
-           acc_damped["Test set", "RMSE"]),
-  
-  MAE = c(acc_trend["Test set", "MAE"],
-          acc_damped["Test set", "MAE"]),
-  
-  MAPE = c(acc_trend["Test set", "MAPE"],
-           acc_damped["Test set", "MAPE"]),
-  
-  LjungBox_pvalue = c(lb_trend$p.value,
-                      lb_damped$p.value)
-)
-
-print(comparison)
-
-# =========================
-# 6. Best Model Selection
-# =========================
-valid_models <- comparison[comparison$LjungBox_pvalue > 0.05, ]
-
-if (nrow(valid_models) == 0) {
-  best_model <- comparison[which.min(comparison$RMSE), ]
-  cat("\nWARNING: Neither model passed Ljung-Box. Selecting fallback by min RMSE.\n")
-} else {
-  best_model <- valid_models[which.min(valid_models$RMSE), ]
-}
-
-cat("\nBEST MODEL:\n")
-print(best_model)
-
-# =========================
-# 7. Plot Best Model
-# =========================
-if (best_model$Model == "TREND") {
-  best_fc <- fc_trend
-} else {
-  best_fc <- fc_damped
-}
-
-plot(best_fc,
-     main = paste("Best TBATS Model:", best_model$Model),
-     xlab = "Time",
-     ylab = "Sales Forecast")
-
-lines(test, col = "red", lwd = 2)
-legend("topleft",
-       legend = c("Forecast", "Actual Test Data"),
-       col = c("blue", "red"),
-       lty = 1,
-       lwd = 2)
-
-cat("\n=== Winning Model Architecture Summary ===\n")
-if(best_model$Model == "TREND") print(tbats_trend)
-if(best_model$Model == "DAMPED") print(tbats_damped)
+# -------------------------------------------------------------
+# TBATS Variant 3:  BoxCox + No trend + No ARMA errors (simpler model)
+# Train_RMSE=51.24  Test_RMSE=55.16  RMSE_Gap=3.92
+# Train_MAPE=43.97  Test_MAPE=24.25  MAPE_Gap=19.72
+# -------------------------------------------------------------
+fit_tbats3 <- tbats(train,
+                    use.box.cox      = TRUE,
+                    use.trend        = FALSE,
+                    use.damped.trend = FALSE,
+                    use.arma.errors  = FALSE)
+summary(fit_tbats3)
+checkresiduals(fit_tbats3)
+fr_tbats3 <- forecast(fit_tbats3, h = h)
+accuracy(fr_tbats3, test)
+plot(fr_tbats3, main = "TBATS  (BoxCox, no trend, no ARMA)")
+lines(test, col = "turquoise2", lwd = 2)
