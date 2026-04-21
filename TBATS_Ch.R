@@ -1,8 +1,10 @@
+#TBATS
 library(forecast)
-
-# Model: TBATS
-fit_tbats <- tbats(train)
+fit_tbats <- tbats(train, use.box.cox = TRUE, use.trend = TRUE, use.damped.trend = FALSE, use.arma.errors = TRUE)
 summary(fit_tbats)
+fitted_values <- fitted(fit_tbats)
+plot(train, main = "Actual vs Fitted (TBATS Model)", ylab = "Value", xlab = "Time")
+lines(fitted_values, col = "blue", lwd = 2)
 checkresiduals(fit_tbats)
 fr_tbats <- forecast(fit_tbats, h = h)
 accuracy(fr_tbats, test)
