@@ -39,11 +39,11 @@ lines(test, col="red", lwd=2)
 legend("topleft", legend=c("Forecast","Actual"),
        col=c("blue","red"), lty=1, lwd=2, cex=0.7)
 
-acc <- accuracy(fit_snaive, test)
-print(acc)
+snaive_acc <- accuracy(fit_snaive, test)
+print(snaive_acc)
 
-mape_train <- acc["Training set","MAPE"]
-mape_test  <- acc["Test set","MAPE"]
+mape_train <- snaive_acc["Training set","MAPE"]
+mape_test  <- snaive_acc["Test set","MAPE"]
 mape_diff  <- abs(mape_train - mape_test)
 
 cat("Train MAPE:", mape_train, "\n")

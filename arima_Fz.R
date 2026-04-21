@@ -60,15 +60,14 @@ arima_fitting_result <- data.frame(
 cat("=== SARIMA Model Comparison: AIC and BIC ===\n\n")
 print(arima_fitting_result)
 
-# Check Residual for fit1 & fit2
+# Check Residual 
 checkresiduals(arima_fit1)
-checkresiduals(arima_fit3)
+# siginificant model p > 0.05
 
-# Selected the fit1 due to siginificant model p > 0.05
 # Forecast on test set
 arima_fr1 <- forecast(arima_fit1, h=h)
 
-accuracy(arima_fr1, test)
+arima_acc <- accuracy(arima_fr1, test)
 
 # Plotting
 plot(arima_fr1, main = "SARIMA(0,1,1)(0,1,1)[12]")
