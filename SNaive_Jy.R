@@ -23,15 +23,10 @@ legend("topleft",
        lty=1, lwd=2, cex=0.7)
 
 # DIAGNOSTIC CHECKING
-res <- na.omit(residuals(fit_snaive))
+checkresiduals(fit_snaive, lag = 12)
 
-plot(res, main="Residuals - SNaive",
-     ylab="Residuals", xlab="Index", type="l")
-abline(h=0, col="red", lty=2)
-
-acf(res, main="ACF of Residuals - SNaive")
-
-ljung_snaive <- Box.test(res, lag=12, type="Ljung-Box")
+ljung_snaive <- Box.test(residuals(fit_snaive),
+                         lag=12, type="Ljung-Box")
 print(ljung_snaive)
 
 # FORECAST EVALUATION
