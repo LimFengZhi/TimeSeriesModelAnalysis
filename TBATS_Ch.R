@@ -7,6 +7,7 @@ plot(train, main = "Actual vs Fitted (TBATS Model)", ylab = "Value", xlab = "Tim
 lines(fitted_values, col = "blue", lwd = 2)
 checkresiduals(fit_tbats)
 fr_tbats <- forecast(fit_tbats, h = h)
-accuracy(fr_tbats, test)
+
+tbats_acc <- accuracy(fr_tbats, test)
 plot(fr_tbats, main = "TBATS")
 lines(test, col = "turquoise2", lwd = 2)
