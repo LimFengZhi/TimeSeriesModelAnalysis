@@ -11,7 +11,9 @@ checkresiduals(fit_hw)
 ljung_hw <- Box.test(residuals(fit_hw),
                      lag = 12, type = "Ljung-Box")
 
-acc_hw<- accuracy(fit_hw, test)
+
+
+hw_acc<- accuracy(fit_hw, test)
 print(hw_acc)
 plot(fit_hw, main = "HW Additive alpha = 0.02, beta = 0.005, gamma = 0.65",
      ylab = "Sales", xlab = "Year", fcol = "blue", flwd = 2)

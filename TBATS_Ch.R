@@ -18,7 +18,7 @@ fc_tbats  <- forecast(fit_tbats, h = h)
 acc_tbats <- accuracy(fc_tbats, test)
 print(tbats_acc)
 
-plot(fr_tbats, main = "TBATS",
+plot(fr_tbats, main = "TBATS (Trend + ARMA)",
      ylab = "Sales", xlab = "Year", fcol = "blue", flwd = 2)
 lines(test, col = "red", lwd = 2)
 legend("topleft", legend = c("Forecast","Test"),

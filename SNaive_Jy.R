@@ -22,7 +22,7 @@ checkresiduals(fit_snaive, lag = 12)
 ljung_snaive <- Box.test(residuals(fit_snaive), lag =12, type = "Ljung-Box")
 
 # FORECAST EVALUATION
-plot(fit_snaive, main = "SNaive Forecast vs Test",
+plot(fit_snaive, main = "SNaive",
      ylab = "Sales", xlab = "Year",
      fcol = "blue", flwd = 2)
 
