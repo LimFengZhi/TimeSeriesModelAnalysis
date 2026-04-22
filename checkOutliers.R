@@ -1,3 +1,5 @@
+# Author: Lim Feng Zhi
+
 train_clean <- tsclean(train)
 
 # Show what tsclean() changed

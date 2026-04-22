@@ -1,4 +1,6 @@
 # FINAL MODEL COMPARISON
+# Author: Lim Feng Zhi, Tham Zhen Hern, Tho Hui Yee, Ng Chiao Han
+
 model_comparison <- data.frame(
   Model = c(
     "SARIMA(0,1,1)(0,1,1)[12]",

@@ -1,4 +1,6 @@
 # Import Data
+# Author: Lim Feng Zhi, Tham Zhen Hern, Tho Hui Yee, Ng Chiao Han
+
 sales_ds <- read.csv("Sales.csv")
 View(sales_ds)
 
