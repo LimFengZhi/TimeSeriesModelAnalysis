@@ -5,6 +5,8 @@ library(forecast)
 fit_hw <- hw(train, seasonal = "additive", h = h,
               alpha = 0.02, beta = 0.005, gamma = 0.65)
 
+autoplot(fit_hw$model)
+
 # DIAGNOSIS CHECKING
 summary(fit_hw)
 checkresiduals(fit_hw)

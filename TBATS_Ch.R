@@ -8,6 +8,8 @@ fit_tbats <- tbats(train,
                    use.arma.errors   = TRUE,
                    seasonal.periods  = c(12, 6))
 
+autoplot(fit_tbats$fitted.values)
+
 # DIAGNOSIS CHECKING
 summary(fit_tbats)
 checkresiduals(fit_tbats)

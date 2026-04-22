@@ -58,6 +58,8 @@ arima_fitting_result <- data.frame(
   BIC = c(BIC(arima_fit1), BIC(arima_fit2), BIC(arima_fit3),
           BIC(arima_fit4), BIC(arima_fit5), BIC(auto_arima_fit))
 )
+autoplot(arima_fit1)
+
 
 # Print AIC & BIC
 cat("=== SARIMA Model Comparison: AIC and BIC ===\n\n")

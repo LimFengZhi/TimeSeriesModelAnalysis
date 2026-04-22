@@ -16,6 +16,8 @@ legend("topleft",
        col = c("black", "blue"),
        lty = 1, lwd = 2, cex = 0.7)
 
+autoplot(fit_snaive$fitted)
+
 # DIAGNOSTIC CHECKING (3-in-1 plot)
 checkresiduals(fit_snaive, lag = 12)
 

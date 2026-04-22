@@ -5,6 +5,8 @@ library(forecast)
 fit_ets <- ets(train, model = "AAA",
             alpha = 0.05, beta = 0.01, gamma = 0.05)
 
+autoplot(fit_ets)
+
 # DIAGNOSIS CHECKING
 summary(fit_ets)
 checkresiduals(fit_ets)

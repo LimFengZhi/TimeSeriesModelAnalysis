@@ -1,5 +1,4 @@
 # FINAL MODEL COMPARISON
-
 model_comparison <- data.frame(
   Model = c(
     "SARIMA(0,1,1)(0,1,1)[12]",
@@ -8,16 +7,6 @@ model_comparison <- data.frame(
     "TBATS (Trend + ARMA)",
     "Seasonal Naive"
   ),
-  Train_RMSE = c(acc_arima ["Training set", "RMSE"],
-                 acc_ets   ["Training set", "RMSE"],
-                 acc_hw    ["Training set", "RMSE"],
-                 acc_tbats ["Training set", "RMSE"],
-                 acc_snaive["Training set", "RMSE"]),
-  Test_RMSE  = c(acc_arima ["Test set", "RMSE"],
-                 acc_ets   ["Test set", "RMSE"],
-                 acc_hw    ["Test set", "RMSE"],
-                 acc_tbats ["Test set", "RMSE"],
-                 acc_snaive["Test set", "RMSE"]),
   Train_MAPE = c(acc_arima ["Training set", "MAPE"],
                  acc_ets   ["Training set", "MAPE"],
                  acc_hw    ["Training set", "MAPE"],
@@ -34,6 +23,15 @@ model_comparison <- data.frame(
                  ljung_tbats $p.value,
                  ljung_snaive$p.value)
 )
+
+# Add MAPE gap
+model_comparison$MAPE_Gap <- abs(model_comparison$Test_MAPE - model_comparison$Train_MAPE)
+
+# Round numeric columns for clean display
+model_comparison$Train_MAPE <- round(model_comparison$Train_MAPE, 2)
+model_comparison$Test_MAPE  <- round(model_comparison$Test_MAPE,  2)
+model_comparison$MAPE_Gap   <- round(model_comparison$MAPE_Gap,   2)
+model_comparison$LjungBox_p <- round(model_comparison$LjungBox_p, 4)
 
 cat("\n============ 5-MODEL COMPARISON TABLE ============\n\n")
 print(model_comparison, row.names = FALSE)
