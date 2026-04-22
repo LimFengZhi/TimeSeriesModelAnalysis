@@ -36,3 +36,7 @@ TimeSeriesModelAnalysis/
 ## Author
 
 Lim Feng Zhi
+Ng Chiao Han
+Ngoh Jia Ying
+Tham Zhen Hern
+Tho Hui Yee
