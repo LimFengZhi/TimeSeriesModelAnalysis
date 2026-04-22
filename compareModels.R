@@ -1,32 +1,39 @@
-comparison <- data.frame(
+# FINAL MODEL COMPARISON
+
+model_comparison <- data.frame(
   Model = c(
     "SARIMA(0,1,1)(0,1,1)[12]",
-    "ETS(A,A,A) alpha=0.05 Beta=0.01 Gamma=0.95",
-    "HW Additive alpha=0.15 Beta=0.01 Gamma=0.80",
-    "TBATS (Box-Cox + Trend + ARMA)",
+    "ETS(A,A,A) alpha=0.05 beta=0.01 gamma=0.05",
+    "HW Additive alpha=0.02 beta=0.005 gamma=0.65",
+    "TBATS (Trend + ARMA)",
     "Seasonal Naive"
   ),
-  Train_RMSE = c(arima_acc["Training set","RMSE"],
-                 ets_acc   ["Training set","RMSE"],
-                 hw_acc    ["Training set","RMSE"],
-                 tbats_acc ["Training set","RMSE"],
-                 snaive_acc["Training set","RMSE"]),
-  Test_RMSE  = c(arima_acc["Test set","RMSE"],
-                 ets_acc   ["Test set","RMSE"],
-                 hw_acc    ["Test set","RMSE"],
-                 tbats_acc ["Test set","RMSE"],
-                 snaive_acc["Test set","RMSE"]),
-  Train_MAPE = c(arima_acc["Training set","MAPE"],
-                 ets_acc   ["Training set","MAPE"],
-                 hw_acc    ["Training set","MAPE"],
-                 tbats_acc ["Training set","MAPE"],
-                 snaive_acc["Training set","MAPE"]),
-  Test_MAPE  = c(arima_acc["Test set","MAPE"],
-                 ets_acc   ["Test set","MAPE"],
-                 hw_acc    ["Test set","MAPE"],
-                 tbats_acc ["Test set","MAPE"],
-                 snaive_acc["Test set","MAPE"])
+  Train_RMSE = c(acc_arima ["Training set", "RMSE"],
+                 acc_ets   ["Training set", "RMSE"],
+                 acc_hw    ["Training set", "RMSE"],
+                 acc_tbats ["Training set", "RMSE"],
+                 acc_snaive["Training set", "RMSE"]),
+  Test_RMSE  = c(acc_arima ["Test set", "RMSE"],
+                 acc_ets   ["Test set", "RMSE"],
+                 acc_hw    ["Test set", "RMSE"],
+                 acc_tbats ["Test set", "RMSE"],
+                 acc_snaive["Test set", "RMSE"]),
+  Train_MAPE = c(acc_arima ["Training set", "MAPE"],
+                 acc_ets   ["Training set", "MAPE"],
+                 acc_hw    ["Training set", "MAPE"],
+                 acc_tbats ["Training set", "MAPE"],
+                 acc_snaive["Training set", "MAPE"]),
+  Test_MAPE  = c(acc_arima ["Test set", "MAPE"],
+                 acc_ets   ["Test set", "MAPE"],
+                 acc_hw    ["Test set", "MAPE"],
+                 acc_tbats ["Test set", "MAPE"],
+                 acc_snaive["Test set", "MAPE"]),
+  LjungBox_p = c(ljung_arima $p.value,
+                 ljung_ets   $p.value,
+                 ljung_hw    $p.value,
+                 ljung_tbats $p.value,
+                 ljung_snaive$p.value)
 )
 
 cat("\n============ 5-MODEL COMPARISON TABLE ============\n\n")
-print(comparison, row.names = FALSE)
+print(model_comparison, row.names = FALSE)
