@@ -3,6 +3,8 @@ library(tseries)
 library(uroot)
 
 
+# Model Identification
+
 # Test ORIGINAL series
 ndiffs(train, test="kpss")
 nsdiffs(train, test="ch")
@@ -25,6 +27,7 @@ ggtsdisplay(train_d1,main = "Monthly Sales After Regular Differencing (d=1): ACF
 ggtsdisplay(train_d1_D1,main = "Monthly Sales After Regular and Seasonal Differencing (d=1, D=1): ACF and PACF")
 
 
+# MODEL FITTING
 # Arima Manual Fitting
 arima_fit1 <- Arima(train, order=c(0,1,1), seasonal=c(0,1,1))
 arima_fit2 <- Arima(train, order=c(1,1,0), seasonal=c(1,1,0))
@@ -60,18 +63,21 @@ arima_fitting_result <- data.frame(
 cat("=== SARIMA Model Comparison: AIC and BIC ===\n\n")
 print(arima_fitting_result)
 
-# Check Residual 
+
+
+# DIAGNOSTIC CHECKING
 checkresiduals(arima_fit1)
+ljung_arima <- Box.test(residuals(arima_fit1), lag =12, type = "Ljung-Box")
+
 # siginificant model p > 0.05
 
-# Forecast on test set
-arima_fr1 <- forecast(arima_fit1, h=h)
-
-arima_acc <- accuracy(arima_fr1, test)
-
+# FORECAST EVALUATION
+fc_arima <- forecast(arima_fit1, h=h)
+acc_arima <- accuracy(fc_arima, test)
+print(arima_acc)
 # Plotting
-plot(arima_fr1, main = "SARIMA(0,1,1)(0,1,1)[12] Forecast vs Actual",
+plot(arima_fr1, main = "SARIMA(0,1,1)(0,1,1)[12]",
      ylab = "Sales", xlab = "Year", fcol = "blue", flwd = 2)
 lines(test, col = "red", lwd = 2)
-legend("topleft", legend = c("Forecast","Actual"),
+legend("topleft", legend = c("Forecast","Test"),
        col = c("blue","red"), lty = 1, lwd = 2, cex = 0.7)

@@ -1,12 +1,19 @@
 #ETS
 library(forecast)
-fit1 <- ets(train, model = "AAA",
+
+# MODEL FITTING
+fit_ets <- ets(train, model = "AAA",
             alpha = 0.05, beta = 0.01, gamma = 0.05)
-summary(fit1)
-checkresiduals(fit1)
-fr1 <- forecast(fit1, h = h)
-ets_acc <-accuracy(fr1, test)
-print(ets_acc)
+
+# DIAGNOSIS CHECKING
+summary(fit_ets)
+checkresiduals(fit_ets)
+ljung_ets <- Box.test(residuals(fit_ets),
+                      lag = 12, type = "Ljung-Box")
+# FORECAST EVALUATION
+fc_ets <- forecast(fit_ets, h = h)
+acc_ets <-accuracy(fc_ets, test)
+print(acc_ets)
 
 plot(fr1, main = "ETS(A,A,A) Forecast vs Actual",
      ylab = "Sales", xlab = "Year", fcol = "blue", flwd = 2)
