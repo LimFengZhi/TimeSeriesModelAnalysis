@@ -1,3 +1,5 @@
+# Author Lim Feng Zhi
+
 library(forecast)
 library(tseries)
 library(uroot)

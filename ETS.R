@@ -1,4 +1,4 @@
-#ETS
+#Author: Tho Hui Yee
 library(forecast)
 
 # MODEL FITTING

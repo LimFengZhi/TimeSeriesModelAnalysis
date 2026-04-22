@@ -1,7 +1,9 @@
+# Author Ngoh Jia Ying
+
 library(forecast)
 
 # Model IDENTIFICATION
-# SNaive
+
 
 # MODEL FITTING
 fit_snaive <- snaive(train, h = h)
