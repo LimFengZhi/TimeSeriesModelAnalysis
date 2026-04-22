@@ -3,7 +3,7 @@ comparison <- data.frame(
     "SARIMA(0,1,1)(0,1,1)[12]",
     "ETS(A,A,A) alpha=0.05 Beta=0.01 Gamma=0.95",
     "HW Additive alpha=0.15 Beta=0.01 Gamma=0.80",
-    "TBATS (Box-Cox + Damped + ARMA)",
+    "TBATS (Box-Cox + Trend + ARMA)",
     "Seasonal Naive"
   ),
   Train_RMSE = c(arima_acc["Training set","RMSE"],

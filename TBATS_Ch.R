@@ -1,13 +1,22 @@
-#TBATS
 library(forecast)
-fit_tbats <- tbats(train, use.box.cox = TRUE, use.trend = TRUE, use.damped.trend = FALSE, use.arma.errors = TRUE)
-summary(fit_tbats)
-fitted_values <- fitted(fit_tbats)
-plot(train, main = "Actual vs Fitted (TBATS Model)", ylab = "Value", xlab = "Time")
-lines(fitted_values, col = "blue", lwd = 2)
-checkresiduals(fit_tbats)
-fr_tbats <- forecast(fit_tbats, h = h)
 
+# TBATS (tuned)
+fit_tbats <- tbats(train,
+                   use.box.cox       = FALSE,
+                   use.trend         = TRUE,
+                   use.damped.trend  = FALSE,
+                   use.arma.errors   = TRUE,
+                   seasonal.periods  = c(12, 6))
+
+summary(fit_tbats)
+checkresiduals(fit_tbats)
+
+fr_tbats  <- forecast(fit_tbats, h = h)
 tbats_acc <- accuracy(fr_tbats, test)
-plot(fr_tbats, main = "TBATS")
-lines(test, col = "turquoise2", lwd = 2)
+print(tbats_acc)
+
+plot(fr_tbats, main = "TBATS Forecast vs Actual",
+     ylab = "Sales", xlab = "Year", fcol = "blue", flwd = 2)
+lines(test, col = "red", lwd = 2)
+legend("topleft", legend = c("Forecast","Actual"),
+       col = c("blue","red"), lty = 1, lwd = 2, cex = 0.7)
