@@ -1,3 +1,4 @@
+# Author Ng Chiao Han
 library(forecast)
 
 # MODEL FITTING
